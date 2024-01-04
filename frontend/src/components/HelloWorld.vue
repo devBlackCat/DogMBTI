@@ -8,16 +8,14 @@
 
     <div v-if="recommendation">
       <h2>추천 견종:</h2>
-      <ul>
-        <li v-for="(dog, index) in recommendation" :key="index">
-          {{ dog.dog_name }}
-          <ul>
-            <li v-for="detail in dog.details" :key="detail.id">
-              {{ detail.difficulty_level }} - {{ detail.difficulty_description }}
-            </li>
-          </ul>
-        </li>
-      </ul>
+      <div>
+        {{ recommendation.dog_name }}
+        <ul>
+          <li v-for="detail in recommendation.details" :key="detail.id">
+            {{ detail.difficulty_level }} - {{ detail.difficulty_description }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -33,21 +31,28 @@ export default {
       loading: false,
     };
   },
-methods: {
+  methods: {
   getMbtiRecommendation() {
     this.loading = true;
-    axios.get('http://localhost:8000/api/mbti/', { params: { mbti: this.userMbti } })
+    axios.get('http://127.0.0.1:8000/api/mbti/', { params: { mbti: this.userMbti } })
+
       .then(response => {
-        this.recommendation = response.data.results;
+        console.log("서버 응답:", response.data); // 서버 응답 로그 출력
+        if (response.data.results && response.data.results.length > 0) {
+          this.recommendation = response.data.results[0];
+          console.log("추천 데이터:", this.recommendation); // 추천 데이터 로그 출력
+        } else {
+          this.recommendation = null;
+        }
         this.loading = false;
       })
       .catch(error => {
         console.error("Error fetching data:", error);
-        console.log("Requested URL:", error.config.url); // 요청된 URL 로깅
         this.loading = false;
       });
   },
 },
+
 
 };
 </script>
