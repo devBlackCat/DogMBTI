@@ -1,4 +1,13 @@
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
 source venv/bin/activate
+(끌떄:deactivate)
 python manage.py runserver
 
 npm run build
+
+git add .
+git commit -m "변경 내용에 대한 설명"
+git push

@@ -1,4 +1,3 @@
-#main/view.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import DogsMbti, DogDetails
@@ -36,7 +35,6 @@ class MBTIRecommendationView(APIView):
             'estj':['intp','isfp','istp']
             }
 
-
             compatible_mbtis = mbti_compatibility.get(user_mbti.lower(), [])
             if not compatible_mbtis:
                 logger.warning(f"유효하지 않은 MBTI 유형: {user_mbti}")
@@ -44,16 +42,18 @@ class MBTIRecommendationView(APIView):
 
             results = []
             for mbti in compatible_mbtis:
-                logger.info(f"호환 MBTI 유형 조회: {mbti}")  # 추가된 로깅
-                dogs = DogsMbti.objects.filter(dog_mbti_type=mbti.upper())
-                for dog in dogs:
-                    details = DogDetails.objects.filter(dog=dog)
+                details = DogDetails.objects.filter(dog_mbti_type=mbti.upper())
+                logger.info(f"견종 상세 정보 조회 결과: {details}")  # 로그 추가
+
+                for detail in details:
+                    dog = detail.dog
                     dog_data = {
                         "dog_name": dog.dog_name,
-                        "details": DogDetailsSerializer(details, many=True).data
+                        "details": DogDetailsSerializer(detail).data
                     }
                     results.append(dog_data)
-            logger.info(f"반환되는 결과: {results}") 
+
+            logger.info(f"서버 응답 데이터: {results}")  # 로그 추가
             return Response({"results": results})
 
         except Exception as e:
