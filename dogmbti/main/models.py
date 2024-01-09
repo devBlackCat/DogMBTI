@@ -8,6 +8,8 @@ class DogsMbti(models.Model):
     mental = models.CharField(max_length=1, choices=[('N', 'Intuitive'), ('S', 'Sensing')])
     nature = models.CharField(max_length=1, choices=[('F', 'Feeling'), ('T', 'Thinking')])
     tactics = models.CharField(max_length=1, choices=[('J', 'Judging'), ('P', 'Perceiving')])
+    def __str__(self):
+        return self.dog_name+'('+self.energy+self.mental+self.nature+self.tactics+')'
 
 class DogDetails(models.Model):
     dog = models.ForeignKey(DogsMbti, on_delete=models.CASCADE)
@@ -20,9 +22,13 @@ class DogDetails(models.Model):
     intelligence = models.TextField()
     opinion_content = models.TextField()
     youtube_link = models.URLField()
+    def __str__(self):
+        return self.dog.dog_name+'('+self.dog_mbti_type+')'
 
 class UserInfo(models.Model):
     ip = models.GenericIPAddressField()
     mbti = models.CharField(max_length=4)
     age = models.IntegerField()
     gender = models.CharField(max_length=1, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')])
+    def __str__(self):
+        return self.ip

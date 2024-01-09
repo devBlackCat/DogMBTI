@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import DogsMbti, DogDetails
+from .models import DogsMbti, DogDetails, UserInfo
 from .serializers import DogsMbtiSerializer, DogDetailsSerializer
 from django.http import JsonResponse
 import logging
@@ -11,7 +11,12 @@ class MBTIRecommendationView(APIView):
     def get(self, request, format=None):
         try:
             user_mbti = request.query_params.get('mbti')
-            logger.info(f"받은 MBTI 유형: {user_mbti}")  # 추가된 로깅
+            user_age = request.query_params.get('age')
+            user_gender = request.query_params.get('gender')
+            user_ip = self.get_client_ip(request)
+            
+            logger.info(f"받은 MBTI 유형: {user_mbti}, IP: {user_ip}")  # 추가된 로깅
+            UserInfo.objects.create(ip=user_ip, mbti=user_mbti, age=user_age, gender=user_gender)
             if not user_mbti:
                 logger.warning("MBTI 유형이 제공되지 않음")
                 return Response({"error": "MBTI 유형이 제공되지 않았습니다."}, status=400)
@@ -59,3 +64,11 @@ class MBTIRecommendationView(APIView):
         except Exception as e:
             logger.error(f"서버 내부 오류: {str(e)}")
             return JsonResponse({"error": "서버 내부 오류가 발생했습니다."}, status=500)
+    
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
