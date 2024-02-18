@@ -1,0 +1,18 @@
+
+# Windows
+python3 -m venv venv
+
+venv\Scripts\activate
+ deactivate   
+
+# macOS/Linux
+source venv/bin/activate
+(끌떄:deactivate)
+python manage.py runserver
+
+npm run build
+npm run serve
+
+git add .
+git commit -m "상세페이지 디자인수정"
+git push
